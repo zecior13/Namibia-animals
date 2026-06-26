@@ -1,4 +1,5 @@
-const CACHE_NAME = "namibia-animals-v1";
+const CACHE_PREFIX = "namibia-animals-";
+const CACHE_NAME = "namibia-animals-v2";
 
 const PHOTO_FILES = Array.from({ length: 60 }, (_, i) =>
   `./photos/${String(i + 1).padStart(2, "0")}.jpg`
@@ -17,15 +18,13 @@ const FILES_TO_CACHE = [
 
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return Promise.all(
+    caches.open(CACHE_NAME).then(cache =>
+      Promise.all(
         FILES_TO_CACHE.map(url =>
-          cache.add(url).catch(err => {
-            console.warn("Nie udało się dodać do cache:", url, err);
-          })
+          cache.add(url).catch(err => console.warn("Cache fail:", url, err))
         )
-      );
-    })
+      )
+    )
   );
   self.skipWaiting();
 });
@@ -34,7 +33,11 @@ self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
-        keys.map(key => key !== CACHE_NAME ? caches.delete(key) : null)
+        keys.map(key => {
+          if (key.startsWith(CACHE_PREFIX) && key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
       )
     )
   );
