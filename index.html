@@ -717,5 +717,27 @@ if(player){
   });
 }
 </script>
+  if(player){
+  startApp();
+} else {
+  document.getElementById("startBtn").addEventListener("click", ()=>{
+    const val = document.getElementById("nameInput").value.trim();
+    if(!val){ alert("Wpisz imię, żeby zacząć."); return; }
+    player = val;
+    localStorage.setItem(KEY_PLAYER, player);
+    startApp();
+  });
+}
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("./sw.js");
+  });
+}
+</script>
+</body>
+</html>
 </body>
 </html>
